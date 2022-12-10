@@ -16,7 +16,7 @@ import javax.validation.constraints.Size;
 @Setter
 @NoArgsConstructor
 //@JsonPropertyOrder(value = {"password"})
-@JsonFilter("UserInfo")
+//@JsonFilter("UserInfo")
 public class User {
 
     @Id

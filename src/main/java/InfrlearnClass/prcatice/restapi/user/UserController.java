@@ -1,6 +1,8 @@
 package InfrlearnClass.prcatice.restapi.user;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -9,6 +11,8 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,7 +26,20 @@ public class UserController {
         user.setName("name");
         user.setPassword("password");
         userService.saveUser(user);
+
         return userService.findUser(id).orElseThrow(()-> new UserNotFountException(String.format("ID[%s] not found",id)));
+    }
+
+
+    @GetMapping("/HATEOAS/user/{id}")
+    public EntityModel<User> findUserHATEOAS(@PathVariable Long id) {
+        User user = userService.findUser(id).orElseThrow(()-> new UserNotFountException(String.format("ID[%s] not found",id)));
+
+
+        return EntityModel.of(user,
+                linkTo(methodOn(this.getClass()).findUser(user.getId())).withSelfRel(),
+                linkTo(methodOn(this.getClass()).saveUser(user)).withRel("save-user")
+                );
     }
 
     @PostMapping("/user")
